@@ -174,8 +174,7 @@ def add_borders(img_read):
     top, bottom, left, right = [150]*4
     image_with_border = cv2.copyMakeBorder(
         no_borders, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)
-    cv2.imwrite("temp/image_with_border{}.jpg".format(Q2), image_with_border)
-    #cv2.imwrite("temp/image_with_border{Q2.answer}.jpg", image_with_border)
+    cv2.imwrite("temp/image_with_border_{}.jpg".format(Q2), image_with_border)
 
 
 add_borders(img_read)
