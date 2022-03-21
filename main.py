@@ -3,7 +3,7 @@ from PIL import Image
 import pytesseract
 from matplotlib import pyplot as plt
 from pdf2image import convert_from_path
-
+import numpy as np
 
 image_file = "data/template1.jpg"
 
@@ -57,14 +57,19 @@ def image_rotation(img):
         "Hello do you want to rotate the image by 45, 90, 180, 270 or 360 degrees?: ")
     if Q1 == "90":
         img.rotate(90).show()
+        img.rotate(90).save(r'temp/rotated_image90fix.jpg')
     elif Q1 == "45":
         img.rotate(45).show()
+        img.rotate(45).save(r'temp/rotated_image45fix.jpg')
     elif Q1 == "180":
         img.rotate(180).show()
+        img.rotate(180).save(r'temp/rotated_image180fix.jpg')
     elif Q1 == "270":
         img.rotate(270).show()
+        img.rotate(270).save(r'temp/rotated_image270fix.jpg')
     elif Q1 == "360":
         img.rotate(360).show()
+        img.rotate(360).save(r'temp/rotated_image360fix.jpg')
     else:
         print("no, this was not an option!")
 
@@ -84,16 +89,16 @@ def grayscale(img_read):
 
 gray_image = grayscale(img_read)
 cv2.imwrite("temp/original_image.jpg", gray_image)
+
 # binary changer for grayscale
 thresh, im_bw = cv2.threshold(gray_image, 127, 230, cv2.THRESH_BINARY)
 cv2.imwrite("temp/bw_image.jpg", im_bw)
-# ______ all gray scale codes
+# ______
 
 # noise removing removes uneeded pixels
 
 
 def noise_removal(img_read):
-    import numpy as np
     kernel = np.ones((1, 1), np.uint8)
     image = cv2.dilate(img_read, kernel, iterations=1)
     kernel = np.ones((1, 1), np.uint8)
@@ -107,7 +112,38 @@ no_noise = noise_removal(im_bw)
 cv2.imwrite("temp/no_noise.jpg", no_noise)
 # _____ end of noise removal (pixel remover)
 
+# dilation and erosion (for text with thick fonts)
+
+
+def thin_font(img_read):
+    image = cv2.bitwise_not(img_read)
+    kernel = np.ones((2, 2), np.uint8)
+    image = cv2.erode(image, kernel, iterations=1)
+    image = cv2.bitwise_not(image)
+    return (image)
+
+
+eroded_image = thin_font(no_noise)
+cv2.imwrite("temp/eroded_image.jpg", eroded_image)
+# __________
+
+# make fonts thicker
+
+
+def thick_font(img_read):
+    image = cv2.bitwise_not(img_read)
+    kernel = np.ones((2, 2), np.uint8)
+    image = cv2.dilate(image, kernel, iterations=1)
+    image = cv2.bitwise_not(image)
+    return (image)
+
+
+dilated_image = thick_font(no_noise)
+cv2.imwrite("temp/dilated_image.jpg", dilated_image)
+# __________
+
 
 # print(img) #shows image meta-data
 # grayscale(img_read)
-display("temp/no_noise.jpg")
+# display("temp/dilated_image.jpg")
+image_rotation(img)
