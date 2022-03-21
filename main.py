@@ -2,36 +2,13 @@ import cv2
 from PIL import Image
 import pytesseract
 from matplotlib import pyplot as plt
+from pdf2image import convert_from_path
+
 
 image_file = "data/caption.jpg"
 
 img = Image.open(image_file)
 img_read = cv2.imread(image_file)
-# rotates images
-
-
-def image_rotation(img):
-    Q1 = input(
-        "Hello do you want to rotate the image by 45, 90, 180, 270 or 360 degrees?: ")
-    if Q1 == "90":
-        img.rotate(90).show()
-    elif Q1 == "45":
-        img.rotate(45).show()
-    elif Q1 == "180":
-        img.rotate(180).show()
-    elif Q1 == "270":
-        img.rotate(270).show()
-    elif Q1 == "360":
-        img.rotate(360).show()
-    else:
-        print("no, this was not an option!")
-
-# inverts RGB of images
-
-
-def invert(img_read):
-    inverted_image = cv2.bitwise_not(img_read)
-    cv2.imwrite("temp/inverted.jpg", inverted_image)
 
 # https://stackoverflow.com/questions/28816046/
 # displaying-different-images-with-actual-size-in-matplotlib-subplot
@@ -58,7 +35,47 @@ def display(im_path):
 
     plt.show()
 
-# convert image to grayscaling
+
+def convert_pdf(pdf_path, save_dir, res=400):
+    pages = convert_from_path(pdf_path, res)
+
+    name_with_extension = pdf_path.rsplit('/')[-1]
+    name = name_with_extension.rsplit('.')[0]
+
+    for idx, page in enumerate(pages):
+        page.save(f'{save_dir}/{name}_{idx}.png', 'PNG')
+
+
+convert_pdf(
+    'data/template1.pdf', 'temp')
+
+# image rotation function
+
+
+def image_rotation(img):
+    Q1 = input(
+        "Hello do you want to rotate the image by 45, 90, 180, 270 or 360 degrees?: ")
+    if Q1 == "90":
+        img.rotate(90).show()
+    elif Q1 == "45":
+        img.rotate(45).show()
+    elif Q1 == "180":
+        img.rotate(180).show()
+    elif Q1 == "270":
+        img.rotate(270).show()
+    elif Q1 == "360":
+        img.rotate(360).show()
+    else:
+        print("no, this was not an option!")
+
+# inverts RGB of images
+
+
+def invert(img_read):
+    inverted_image = cv2.bitwise_not(img_read)
+    cv2.imwrite("temp/inverted.jpg", inverted_image)
+
+# grayscale effect
 
 
 def grayscale(img_read):
@@ -70,5 +87,6 @@ def grayscale(img_read):
 
 
 # print(img) #shows image meta-data
-grayscale(img_read)
+# grayscale(img_read)
 # display(image_file)
+display("temp/inverted.jpg")
