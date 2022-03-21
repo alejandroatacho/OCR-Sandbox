@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 from pdf2image import convert_from_path
 
 
-image_file = "data/caption.jpg"
+image_file = "data/template1.jpg"
 
 img = Image.open(image_file)
 img_read = cv2.imread(image_file)
@@ -79,14 +79,35 @@ def invert(img_read):
 
 
 def grayscale(img_read):
-    gray = cv2.cvtColor(img_read, cv2.COLOR_BGR2GRAY)
-    cv2.imwrite("temp/original image", img_read)
-    cv2.imwrite("temp/gray image", gray)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    return cv2.cvtColor(img_read, cv2.COLOR_BGR2GRAY)
+
+
+gray_image = grayscale(img_read)
+cv2.imwrite("temp/original_image.jpg", gray_image)
+# binary changer for grayscale
+thresh, im_bw = cv2.threshold(gray_image, 127, 230, cv2.THRESH_BINARY)
+cv2.imwrite("temp/bw_image.jpg", im_bw)
+# ______ all gray scale codes
+
+# noise removing removes uneeded pixels
+
+
+def noise_removal(img_read):
+    import numpy as np
+    kernel = np.ones((1, 1), np.uint8)
+    image = cv2.dilate(img_read, kernel, iterations=1)
+    kernel = np.ones((1, 1), np.uint8)
+    image = cv2.erode(image, kernel, iterations=1)
+    image = cv2.morphologyEx(image, cv2.MORPH_CLOSE, kernel)
+    image = cv2.medianBlur(image, 3)
+    return (image)
+
+
+no_noise = noise_removal(im_bw)
+cv2.imwrite("temp/no_noise.jpg", no_noise)
+# _____ end of noise removal (pixel remover)
 
 
 # print(img) #shows image meta-data
 # grayscale(img_read)
-# display(image_file)
-display("temp/inverted.jpg")
+display("temp/no_noise.jpg")
