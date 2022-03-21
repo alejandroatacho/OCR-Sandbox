@@ -1,5 +1,6 @@
 import cv2
 from PIL import Image
+from cv2 import BORDER_CONSTANT
 import pytesseract
 from matplotlib import pyplot as plt
 from pdf2image import convert_from_path
@@ -142,8 +143,45 @@ dilated_image = thick_font(no_noise)
 cv2.imwrite("temp/dilated_image.jpg", dilated_image)
 # __________
 
+# remove unneeded borders around the pdf file/image
+
+
+def remove_borders(img_read):
+    contours, heiarchy = cv2.findContours(
+        img_read, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cntsSorted = sorted(contours, key=lambda x: cv2.contourArea(x))
+    cnt = cntsSorted[-1]
+    x, y, w, h = cv2.boundingRect(cnt)
+    crop = img_read[y:y+h, x:x+w]
+    return (crop)
+
+
+no_borders = remove_borders(no_noise)
+cv2.imwrite("temp/no_border.jpg", no_borders)
+# __________________________________
+
+
+def add_borders(img_read):
+    Q2 = input("What kind of border color do you want?".lower())
+    if Q2 == "white":
+        color = [255, 255, 255]
+    elif Q2 == "black":
+        color = [0, 0, 0]
+    elif Q2 == "grey":
+        color = [211, 211, 211]
+    else:
+        print("Sorry your color is not available")
+    top, bottom, left, right = [150]*4
+    image_with_border = cv2.copyMakeBorder(
+        no_borders, top, bottom, left, right, cv2.BORDER_CONSTANT, value=color)
+    cv2.imwrite("temp/image_with_border{}.jpg".format(Q2), image_with_border)
+    #cv2.imwrite("temp/image_with_border{Q2.answer}.jpg", image_with_border)
+
+
+add_borders(img_read)
+# display("temp/image_with_border.jpg")
 
 # print(img) #shows image meta-data
 # grayscale(img_read)
 # display("temp/dilated_image.jpg")
-image_rotation(img)
+# image_rotation(img)
