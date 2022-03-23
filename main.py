@@ -5,6 +5,7 @@ import pytesseract
 from matplotlib import pyplot as plt
 from pdf2image import convert_from_path
 import numpy as np
+import img2pdf
 
 image_file = "data/template1.jpg"
 
@@ -45,10 +46,6 @@ def convert_pdf(pdf_path, save_dir, res=400):
 
     for idx, page in enumerate(pages):
         page.save(f'{save_dir}/{name}_{idx}.png', 'PNG')
-
-
-convert_pdf(
-    'data/template1.pdf', 'temp')
 
 # image rotation function
 
@@ -122,7 +119,7 @@ def thin_font(img_read):
     image = cv2.erode(image, kernel, iterations=1)
     image = cv2.bitwise_not(image)
     return (image)
-
+    
 
 eroded_image = thin_font(no_noise)
 cv2.imwrite("temp/eroded_image.jpg", eroded_image)
@@ -162,7 +159,7 @@ cv2.imwrite("temp/no_border.jpg", no_borders)
 
 
 def add_borders(img_read):
-    Q2 = input("What kind of border color do you want?".lower())
+    Q2 = input("What kind of border color do you want? ".lower())
     if Q2 == "white":
         color = [255, 255, 255]
     elif Q2 == "black":
@@ -177,9 +174,9 @@ def add_borders(img_read):
     cv2.imwrite("temp/image_with_border_{}.jpg".format(Q2), image_with_border)
 
 
-add_borders(img_read)
+# add_borders(img_read)
 # display("temp/image_with_border.jpg")
-
+# convert_pdf('data/template1.pdf', 'temp')
 # print(img) #shows image meta-data
 # grayscale(img_read)
 # display("temp/dilated_image.jpg")
